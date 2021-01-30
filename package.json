@@ -1,0 +1,17 @@
+{
+  "name": "delilah-resto",
+  "version": "1.0.0",
+  "description": "This is an API for an online delivery system for a restaurant, putting into operation the necessary parts to mount a REST API that allows CRUD operations on a data structure.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Carlos Fortich",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mariadb": "^2.5.2",
+    "sequelize": "^6.5.0"
+  }
+}
