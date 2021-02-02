@@ -2,9 +2,9 @@ const router = require('express').Router();
 const { createUser } = require('../controllers/users/createUser');
 const { login } = require('../controllers/users/login');
 const { getUsers } = require('../controllers/users/getUsers')
-const { userCreationValidation } = require('../middlewares/userCreationValidation');
-const { userCreationDataValidation } = require('../middlewares/userCreationDataValidation');
-const { userLoginValidation } = require('../middlewares/userLoginValidation');
+const { userCreationValidation } = require('../middlewares/userMD/userCreationValidation');
+const { userCreationDataValidation } = require('../middlewares/userMD/userCreationDataValidation');
+const { userLoginValidation } = require('../middlewares/userMD/userLoginValidation');
 const { userTokenValidation } = require('../middlewares/userTokenValidation');
 const { userTokenAdminValidation } = require('../middlewares/userTokenAdminValidation');
 

@@ -1,4 +1,4 @@
-const {User} = require('../db');
+const {User} = require('../../db');
 
 const userCreationDataValidation = async (req, res, next)=>{
     const userInfo = await User.findAll({ where: { email: req.body.email, username: req.body.username }});
@@ -7,7 +7,7 @@ const userCreationDataValidation = async (req, res, next)=>{
     if(userInfo.length === 0){
         next();
     }else{
-        res.status(400).json({error: 'Email or username already in use'});
+        res.status(403).json({error: 'Email or username already in use'});
     }; 
 
 };
