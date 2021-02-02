@@ -11,6 +11,6 @@ const { userTokenAdminValidation } = require('../middlewares/userTokenAdminValid
 
 router.post('/register',userCreationValidation, userCreationDataValidation, createUser);
 router.post('/login',userLoginValidation, login);
-router.get('/', userTokenValidation, userTokenAdminValidation, getUsers);
+router.get('/', userTokenValidation, getUsers);
 
 module.exports = router;

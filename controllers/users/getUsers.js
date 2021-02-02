@@ -1,13 +1,26 @@
 const { User } = require('../../db');
+const jwt = require('jsonwebtoken');
 
 const getUsers = async (req, res)=>{
-    const users = await User.findAll();
-
-    if(users.length != 0){
-        res.status(200).json({ users: users });
+    const token = req.headers.authorization.split(' ')[1];
+    const payload =jwt.decode(token)
+    if(payload.role === 'customer'){
+        const self = await User.findOne({
+            where:{
+                email: payload.email
+            }
+        })
+        res.status(200).json({ data: self });
+    }else if(payload.role === 'admin'){
+        const users = await User.findAll();
+        if(users.length != 0){
+            res.status(200).json({ users: users });
+        }else{
+            res.status(404).json({ error: 'There are no users registered' });
+        }
     }else{
-        res.status(404).json({ error: 'There are no users registered' })
-    }
+        res.status(500).json({error: 'Oops! We are having some trouble retreiving the data. Please, try again later'});
+    };
 };
 
 module.exports = { getUsers }
