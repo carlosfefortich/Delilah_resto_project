@@ -24,6 +24,7 @@ Now that we have everything we need, we are going to start.
 - `npm i nodemon`
 
 ***NOTE: If you are using a terminal, make sure you are on the project folder before executing the commands***
+
 4. Install all the dependencies by running npm install:
 - `npm install`
 5. Start the server by running npm start:
