@@ -14,5 +14,6 @@ module.exports = (sequelize, type)=>{
             type: type.STRING(10),
             allowNull: false
         }
-    });
+    },
+    { timestamps: false });
 };

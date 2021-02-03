@@ -1,0 +1,449 @@
+---
+openapi: 3.0.0
+info:
+  title: Delilah_resto API
+  description: ' API for an online ordering system for a restaurant putting into operation the necessary parts to set up a REST API that allows CRUD operations on a data structure.'
+  version: "1"
+servers:
+- url: http://localhost:3000/
+tags:
+- name: users
+  description: All the operation with users (Get an user, register, login)
+- name: products
+  description: All the operation with products (Get, create, update and delete a product)
+- name: orders
+  description: Get, create and update operations with orders
+paths:
+  /users/register:
+    post:
+      tags:
+      - users
+      summary: Register an user
+      operationId: usersRegister
+      requestBody:
+        description: Object to create a new user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              username: yourUsername
+              fullname: First Lastname
+              email: user@email.whatever
+              phone: "123456789"
+              address: Street 1 HWY
+              password: qwerty
+              role: customer
+        required: true
+      responses:
+        "200":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: Missing one or more fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "403":
+          description: Email or username already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+  /users/login:
+    post:
+      tags:
+      - users
+      summary: User Login
+      operationId: usersLogin
+      requestBody:
+        description: Object to login with an account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              email: user@email.whatever
+              password: qwerty
+        required: true
+      responses:
+        "200":
+          description: Login successfull
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Missing one or more fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "403":
+          description: Invalid username or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+  /users/:
+    get:
+      tags:
+      - users
+      summary: Returns all or one user if authorized (Only users with admin role can retreive all users)
+      responses:
+        "200":
+          description: Fetch all or only one user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                users:
+                  username: yourUsername
+                  fullname: First Lastname
+                  email: user@email.whatever
+                  phone: "123456789"
+                  address: Street 1 HWY
+                  password: qwerty
+                  role: customer
+        "401":
+          description: Access token is missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+  /products/create:
+    post:
+      tags:
+      - products
+      summary: Creates a new product (Only users with admin role can perform this action)
+      operationId: createProduct
+      requestBody:
+        description: Object create a new product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+            example:
+              productName: product1
+              price: "111"
+        required: true
+      responses:
+        "200":
+          description: Product created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "400":
+          description: Missing one or more fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "403":
+          description: This product already exists!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+  /products/update/{productId}:
+    put:
+      tags:
+      - products
+      summary: Update an existing product (Only users with admin role can perform this action)
+      operationId: updateProduct
+      parameters:
+      - name: productId
+        in: path
+        description: Id of the product that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Product updated successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              example:
+                message: string
+                product:
+                  productName: string
+                  price: string
+        "400":
+          description: The ID provided is invalid or does not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+  /products/delete/{productId}:
+    delete:
+      tags:
+      - products
+      summary: Delete an existing product (Only users with admin role can perform this action)
+      operationId: deleteProduct
+      parameters:
+      - name: productId
+        in: path
+        description: Id of the product that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Product deleted successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              example:
+                message: string
+        "400":
+          description: The ID provided is invalid or does not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+  /products/:
+    get:
+      tags:
+      - products
+      summary: Returns all products
+      responses:
+        "200":
+          description: Fetch all products.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              example:
+                products:
+                  productName: product1
+                  price: "11223"
+        "401":
+          description: Access token is missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: There are no products at the moment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+  /orders/create:
+    post:
+      tags:
+      - orders
+      summary: Creates a new order
+      operationId: createOrders
+      requestBody:
+        description: Object create a new order
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+            example:
+              payment_method: Credit card
+              productId: "1"
+              quantity: "2"
+        required: true
+      responses:
+        "200":
+          description: Product created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "400":
+          description: Missing one or more fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: Product not available at the moment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+  /orders/:
+    get:
+      tags:
+      - orders
+      summary: Returns one or all orders (depending on the user's role)
+      responses:
+        "200":
+          description: Fetch all products.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                orders:
+                - orderProperties: properties
+                - products:
+                  - productProperties: properties
+                  - ProductOrders:
+                      ProductOrdersProperties: properties
+        "401":
+          description: Access token is missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: There are no orders at the moment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+  /orders/update/{orderId}:
+    put:
+      tags:
+      - orders
+      summary: Update an existing order's status (Only users with admin role can perform this action)
+      operationId: updateOrderStatus
+      parameters:
+      - name: orderId
+        in: path
+        description: Id of the order that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Product updated successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                message: string
+                product:
+                  productName: string
+                  price: string
+        "400":
+          description: The ID provided is invalid or does not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    User:
+      required:
+      - address
+      - email
+      - fullname
+      - password
+      - phone
+      - role
+      - username
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        fullname:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+    Product:
+      required:
+      - price
+      - productName
+      type: object
+      properties:
+        id:
+          type: integer
+        productName:
+          type: string
+        price:
+          type: string
+    Order:
+      required:
+      - payment_method
+      - productId
+      - quantity
+      type: object
+      properties:
+        id:
+          type: integer
+        time:
+          type: string
+        productId:
+          type: integer
+        status:
+          type: string
+        payment_method:
+          type: string
+        quantity:
+          type: string
+    inline_response_400:
+      type: object
+      properties:
+        error:
+          type: string
+    inline_response_200:
+      type: object
+      properties:
+        token:
+          type: string
+          example: qwe123.asd456.zxc789
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_response_400'
+    MissingFields:
+      description: Missing one or more fields
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_response_400'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

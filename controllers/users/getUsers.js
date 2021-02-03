@@ -1,4 +1,5 @@
 const { User } = require('../../db');
+const {Order} = require('../../db');
 const jwt = require('jsonwebtoken');
 
 const getUsers = async (req, res)=>{
@@ -8,11 +9,14 @@ const getUsers = async (req, res)=>{
         const self = await User.findOne({
             where:{
                 email: payload.email
-            }
+            },
+            include: Order
         })
         res.status(200).json({ data: self });
     }else if(payload.role === 'admin'){
-        const users = await User.findAll();
+        const users = await User.findAll({
+            include: Order
+        });
         if(users.length != 0){
             res.status(200).json({ users: users });
         }else{
