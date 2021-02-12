@@ -170,6 +170,16 @@ paths:
         explode: false
         schema:
           type: integer
+      requestBody:
+        description: New product information
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              productName: Hamburger
+              price: "10"
+        required: true
       responses:
         "200":
           description: Product updated successfully!
@@ -266,8 +276,9 @@ paths:
               $ref: '#/components/schemas/Order'
             example:
               payment_method: Credit card
-              productId: "1"
-              quantity: "2"
+              data:
+              - productId: "1"
+                quantity: "2"
         required: true
       responses:
         "200":
@@ -332,12 +343,21 @@ paths:
       parameters:
       - name: orderId
         in: path
-        description: Id of the order that needs to be updated
+        description: Id of the order which status needs to be updated
         required: true
         style: simple
         explode: false
         schema:
           type: integer
+      requestBody:
+        description: New status of the order
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              status: On the way
+        required: true
       responses:
         "200":
           description: Product updated successfully!
@@ -350,6 +370,38 @@ paths:
                 product:
                   productName: string
                   price: string
+        "400":
+          description: The ID provided is invalid or does not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+      security:
+      - bearerAuth: []
+  /orders/delete/{orderId}:
+    delete:
+      tags:
+      - orders
+      summary: Delete an existing order (Only users with admin role can perform this action)
+      operationId: deleteOrder
+      parameters:
+      - name: orderId
+        in: path
+        description: Id of the order that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Order deleted successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              example:
+                message: string
         "400":
           description: The ID provided is invalid or does not exists
           content:
@@ -410,13 +462,9 @@ components:
           type: integer
         time:
           type: string
-        productId:
-          type: integer
         status:
           type: string
         payment_method:
-          type: string
-        quantity:
           type: string
     inline_response_400:
       type: object
