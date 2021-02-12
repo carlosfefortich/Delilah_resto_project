@@ -4,38 +4,29 @@ const {ProductOrder} = require('../../db');
 const jwt = require('jsonwebtoken');
 
 
-const createOrder = async (req, res)=>{
-    try {
-        const order = req.body;
-        if(order){
-            order.status = 'confirmed';
-            order.time = new Date();
-            const token = req.headers.authorization.split(' ')[1];
-            const payload =jwt.decode(token);
-            order.userId = payload.id;
-        }else{
-            const error = new Error('Request is not valid');
-        }
-        const productExists = await Product.findAll({
-            where: {
-                id: order.productId
-            }
-        });
-        if(productExists){
-            const newOrder = await Order.create(order);
-            await ProductOrder.create({
-                productId: order.productId,
-                orderId: newOrder.id
+const createOrder = (req, res)=>{
+    const order = req.body;
+    const orderList = req.body.data;
+    if(order){
+        order.status = 'confirmed';
+        order.time = new Date();
+        const token = req.headers.authorization.split(' ')[1];
+        const payload =jwt.decode(token);
+        order.userId = payload.id;
+
+        Order.create(order).then((createdOrder)=>{
+            orderList.forEach(eachOrder => {
+                eachOrder.orderId = createdOrder.id
             });
-            res.status(200).json({message: 'Order created successfully!', order: newOrder});
-        }else{
-            res.status(404).json({ error: 'Product is not available at the moment' });
-        }
-        
-    } catch (error) {
-        console.error(error);
-        res.status(400).json({error: 'Product is not available at the moment'});
-    };
+            console.log(orderList);
+            ProductOrder.bulkCreate(orderList).then(()=>{
+                res.status(200).json({message: 'Order created successfully!'});
+            })
+        });
+
+    }else{
+        const error = new Error('Request is not valid');
+    }     
 };
 
 module.exports = { createOrder };

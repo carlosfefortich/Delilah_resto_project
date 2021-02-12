@@ -15,6 +15,10 @@ module.exports = (sequelize, type) =>{
                 model: Order,
                 key: 'id'
             }
+        },
+        quantity: {
+            type: type.INTEGER,
+            allowNull: false
         }
     },
     { timestamps: false }
